@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CS194-26 Project 2 | Leon Xu</title>
+  </head>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@700&display=swap" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: "Source Sans Pro", sans-serif;
+      width: max(70%,1500px);
+      margin: auto;
+      padding: 50px;
+      font-size: 18px;
+    }
+    figure {
+      width: 350px;
+      display: inline-block;
+      padding: 5px;
+      margin: 5px;
+    }
+    figcaption {
+      text-align: center;
+      font-size: 14px;
+    }
+    img {
+      width: 350px;
+    }
+    .center {
+      text-align: center;
+    }
+  </style>
+
+  <body>
+    <h2 align="middle">CS 194-26 Project 2:</h2>
+    <h1 align="middle">Fun with Filters and Frequencies</h1>
+    <h3 align="middle">Leon Xu</h3>
+
+    <br>
+    <h2 align="middle">1.1 Finite Difference Operator</h2>
+
+    <p>
+      We study the finite difference operator following image, beginning with the vertical and horizontal directions, then taking the magnitude:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="input/cameraman.png"/>
+        <figcaption>Cameraman</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      With the following results:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-1/cameraman_dx.jpg"/>
+        <figcaption>Cameraman, Dx</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-1/cameraman_dy.jpg"/>
+        <figcaption>Cameraman, Dy</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-1/cameraman_gr_mag.jpg"/>
+        <figcaption>Cameraman, gradient magnitude</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-1/cameraman_gr_mag_bin.jpg"/>
+        <figcaption>Cameraman, gradient magnitude binarized</figcaption>
+      </figure>
+    </div>
+
+
+    <br>
+    <h2 align="middle">1.2 Derivative of Gaussian Filter</h2>
+
+    <p>
+      Now we try with the blurred cameraman image below. Note that the image is blurred, but it is difficult
+      to tell on this writeup because the image is shrunk to be displayed here.
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-2/cameraman_blur.jpg"/>
+        <figcaption>Cameraman blurred</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Note that the binarized result is far less noisy than before, although the lines are thicker.
+    </p>
+    <div class="center">
+    <figure>
+      <img src="output/1-2/cameraman_blur_dx.jpg"/>
+      <figcaption>Cameraman blurred, Dx</figcaption>
+    </figure>
+    <figure>
+      <img src="output/1-2/cameraman_blur_dy.jpg"/>
+      <figcaption>Cameraman blurred, Dy</figcaption>
+    </figure>
+    <figure>
+      <img src="output/1-2/cameraman_blur_gr_mag.jpg"/>
+      <figcaption>Cameraman blurred, gradient magnitude</figcaption>
+    </figure>
+    <figure>
+      <img src="output/1-2/cameraman_blur_gr_mag_bin.jpg"/>
+      <figcaption>Cameraman blurred, gradient magnitude binarized</figcaption>
+    </figure>
+    </div>
+
+    <p>
+      We get the same results if we convolve the two convolution matrices together before applying to the cameraman.
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-2/cameraman_single_blur_gr_mag_bin.jpg"/>
+        <figcaption>Binarized edge image, combined convolutions</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-2/cameraman_blur_gr_mag_bin.jpg"/>
+        <figcaption>Binarized edge image, separate convolutions</figcaption>
+      </figure>
+    </div>
+
+    <br>
+    <h2 align="middle">1.3 Image Straightening</h2>
+    <p>
+      The original, unstraightened image we are working with:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="input/facade.jpg"/>
+        <figcaption>Facade, tilted</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Using the same process as in 1.2, we get a binarized gradient magnitude image. In addition, we compute a binarized gradient
+      orientation image, binarized on the same threshold as the gradient magnitude.
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-3/facade_gr_mag_bin.jpg"/>
+        <figcaption>Facade, binarized gradient magnitude</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/facade_gr_dir_bin.jpg"/>
+        <figcaption>Facade, binarized gradient direction</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      From this, we obtain a historgram of the gradient orientations in \((-\pi, \pi)\):
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-3/facade_original_histogram.jpg"/>
+        <figcaption>Facade, gradient orientation histogram</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      and we try rotations in the range \([-10, 10]\) to see which maximizes the size of the bins near \(0\), \(90\), \(180\), and \(270\) degrees.
+    </p>
+    <p>
+      This results in the following best histogram and aligned image, with a -3 degree rotation:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/1-3/facade_best_histogram.jpg"/>
+        <figcaption>Facade, aligned gradient orientation histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/facade_best_image.jpg"/>
+        <figcaption>Facade, aligned and cropped</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Alignment results on some other images. The result on the snow image was a bit off, likely because the plants and clouds confused the algorithm.
+    </p>
+    <div class="center">
+      <figure>
+        <img src="input/tree.jpg"/>
+        <figcaption>Tree, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/tree_original_histogram.jpg"/>
+        <figcaption>Tree, histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/tree_best_histogram.jpg"/>
+        <figcaption>Tree, aligned histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/tree_best_image_cropped.jpg"/>
+        <figcaption>Tree, aligned and cropped</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/cambridge.jpg"/>
+        <figcaption>Cambridge, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/cambridge_original_histogram.jpg"/>
+        <figcaption>Cambridge, histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/cambridge_best_histogram.jpg"/>
+        <figcaption>Cambridge, aligned histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/cambridge_best_image_cropped.jpg"/>
+        <figcaption>Cambridge, aligned and cropped</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/momo.jpg"/>
+        <figcaption>Momo, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/momo_original_histogram.jpg"/>
+        <figcaption>Momo, histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/momo_best_histogram.jpg"/>
+        <figcaption>Momo, aligned histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/momo_best_image_cropped.jpg"/>
+        <figcaption>Momo, aligned and cropped</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/snow.jpg"/>
+        <figcaption>Snow, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/snow_original_histogram.jpg"/>
+        <figcaption>Snow, histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/snow_best_histogram.jpg"/>
+        <figcaption>Snow, aligned histogram</figcaption>
+      </figure>
+      <figure>
+        <img src="output/1-3/snow_best_image_cropped.jpg"/>
+        <figcaption>Snow, aligned and cropped</figcaption>
+      </figure>
+    </div>
+
+
+    <br>
+    <h2 align="center">2.1 Image "Sharpening"</h2>
+    <p>
+      We can artificially sharpen an image by getting the image "details" as \(s(i) = i - G(i)\), where \(i\) is the original image and \(G\) applies
+      a Gaussian smoothing filter. Then we add this sharpened image back in: \(i' = i + \alpha s(i)\) for some constant \(\alpha\).
+    </p>
+
+    <p>
+      Below, see the results on some images:
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/taj.jpg"/>
+        <figcaption>Taj Mahal, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-1/taj_sharpened.jpg"/>
+        <figcaption>Taj Mahal, sharpened</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/sharp.jpg"/>
+        <figcaption>Pencil, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-1/sharp_sharpened.jpg"/>
+        <figcaption>Pencil, sharpened</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/momo.jpg"/>
+        <figcaption>Momo, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-1/momo_sharpened.jpg"/>
+        <figcaption>Momo, sharpened</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      However, this does not actually add any new detail, it just tries to emphasize what detail is already there. Consider this blurred image,
+      re-sharpened through the above process: it is not as crisp as the original.
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/momo.jpg"/>
+        <figcaption>Momo, original</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-1/momo_blurred.jpg"/>
+        <figcaption>Momo, blurred</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-1/momo_resharpened.jpg"/>
+        <figcaption>Momo, resharpened</figcaption>
+      </figure>
+    </div>
+
+    <br>
+    <h2 align="center">2.2 Hybrid Images</h2>
+    <p>
+      We combine the low frequencies of one image with the high frequencies of another to create hybrid images.
+      Note that the first image is high-passed, and the second is low-passed.
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/nutmeg.jpg"/>
+        <figcaption>Nutmeg</figcaption>
+      </figure>
+      <figure>
+        <img src="input/DerekPicture.jpg"/>
+        <figcaption>Derek</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_nutmeg_DerekPicture.jpg"/>
+        <figcaption>Nutmeg and Derek</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_nutmeg_DerekPicture_color.jpg"/>
+        <figcaption>Nutmeg and Derek, with color</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/momo.jpg"/>
+        <figcaption>Momo</figcaption>
+      </figure>
+      <figure>
+        <img src="input/me.jpg"/>
+        <figcaption>Me</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_momo_me.jpg"/>
+        <figcaption>Momo and Me</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_momo_me_color.jpg"/>
+        <figcaption>Momo and Me, with color</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/tree.jpg"/>
+        <figcaption>Tree</figcaption>
+      </figure>
+      <figure>
+        <img src="input/car.jpg"/>
+        <figcaption>Car</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_tree_car.jpg"/>
+        <figcaption>Tree and Car</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_tree_car_color.jpg"/>
+        <figcaption>Tree and Car, with color</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/gothic.jpg"/>
+        <figcaption>American Gothic</figcaption>
+      </figure>
+      <figure>
+        <img src="input/skull.jpg"/>
+        <figcaption>Skull</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_gothic_skull.jpg"/>
+        <figcaption>American Gothic and Skull</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_gothic_skull_color.jpg"/>
+        <figcaption>American Gothic and Skull, with color</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Interestingly, the colored results seem to mostly use the colors of the low frequency components. It seems the color information
+      of a picture may often be low frequency.
+    </p>
+
+    <p>
+      To get a closer look at what's going on, we can also look at the log magnitude of the Fourier transforms for the inputs, the filtered images,
+      and the hybrid image. We will do this for the American Gothic and Skull images.
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="output/2-2/gothic_fourier.jpg"/>
+        <figcaption>American Gothic, Fourier</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/high_gothic_fourier.jpg"/>
+        <figcaption>American Gothic, high-passed Fourier</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/skull_fourier.jpg"/>
+        <figcaption>Skull, Fourier</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/low_skull_fourier.jpg"/>
+        <figcaption>Skull, low-passed Fourier</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-2/hybrid_gothic_skull_fourier.jpg"/>
+        <figcaption>American Gothic and Skull, Fourier</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      I'm not really sure what causes the grid lines in the low passed skull's Fourier's log magnitude graph.
+    </p>
+
+
+    <br>
+    <h2 align="center">2.3 Gaussian and Laplacian Stacks</h2>
+
+    <p>
+      We get Gaussian stacks by repeatedly passing the image through a Gaussian filter, and Laplacian stacks by finding
+      the difference between consecutive Gaussian stacks.
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/mona.jpg"/>
+        <figcaption>Mona Lisa</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Gaussian stack:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_0.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 0</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_1.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 1</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_2.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 2</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_3.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 3</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_4.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 4</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_gauss_stack_5.jpg"/>
+        <figcaption>Mona Lisa, Gaussian 5</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Laplacian stack:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/2-3/mona_laplace_stack_0.jpg"/>
+        <figcaption>Mona Lisa, Laplacian 0</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_laplace_stack_1.jpg"/>
+        <figcaption>Mona Lisa, Laplacian 1</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_laplace_stack_2.jpg"/>
+        <figcaption>Mona Lisa, Laplacian 2</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_laplace_stack_3.jpg"/>
+        <figcaption>Mona Lisa, Laplacian 3</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/mona_laplace_stack_4.jpg"/>
+        <figcaption>Mona Lisa, Laplacian 4</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      One thing we can notice on the Mona Lisa is that she is smiling at the first level of the Laplacian stack, but not the last.
+    </p>
+
+    <p>
+      We can also apply this procedure to one of the hybrid images from part 2.2:
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/hybrid_gothic_skull_color.jpg"/>
+        <figcaption>American Gothic and Skull</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Gaussian stack:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_0.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 0</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_1.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 1</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_2.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 2</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_3.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 3</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_4.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 4</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_gauss_stack_5.jpg"/>
+        <figcaption>American Gothic and Skull, Gaussian 5</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Laplacian stack:
+    </p>
+    <div class="center">
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_laplace_stack_0.jpg"/>
+        <figcaption>American Gothic and Skull, Laplacian 0</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_laplace_stack_1.jpg"/>
+        <figcaption>American Gothic and Skull, Laplacian 1</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_laplace_stack_2.jpg"/>
+        <figcaption>American Gothic and Skull, Laplacian 2</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_laplace_stack_3.jpg"/>
+        <figcaption>American Gothic and Skull, Laplacian 3</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-3/hybrid_gothic_skull_color_laplace_stack_4.jpg"/>
+        <figcaption>American Gothic and Skull, Laplacian 4</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      In this way, we can roughly recover the original American Gothic and Skull images.
+    </p>
+
+
+    <br>
+    <h2 align="middle">2.4 Multiresolution Blending</h2>
+
+    <p>
+      In this section, we blend images by blending their Laplacian layers (and the last Gaussian layer) with different levels of a Gaussian stack
+      on a binary mask, such that higher frequency bands get a sharper mask and lower frequency bands get a blurrier one. Specifically, the equation
+      at each level looks like $$L_c = G_m * L_a + (1 - G_m) * L_b$$ where \(L_a\), \(L_b\) are the Laplacian levels of the original images; \(G_m\) is
+      the Gaussian level of the mask; and \(L_c\) is the Laplacian level of the result.
+    </p>
+
+    <p>
+      Below are some results using a binary left/right mask:
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/apple.jpg"/>
+        <figcaption>Apple</figcaption>
+      </figure>
+      <figure>
+        <img src="input/orange.jpg"/>
+        <figcaption>Orange</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/apple_orange_blended_grayscale.jpg"/>
+        <figcaption>Oraple</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/apple_orange_blended.jpg"/>
+        <figcaption>Oraple, colored</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/day.jpg"/>
+        <figcaption>Beginning of Sunset</figcaption>
+      </figure>
+      <figure>
+        <img src="input/night.jpg"/>
+        <figcaption>End of Sunset</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/day_night_blended_grayscale.jpg"/>
+        <figcaption>Sunset</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/day_night_blended.jpg"/>
+        <figcaption>Sunset, colored</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      The next results use an irregular mask.
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="input/leo.jpg"/>
+        <figcaption>Leo</figcaption>
+      </figure>
+      <figure>
+        <img src="input/me_aligned.jpg"/>
+        <figcaption>Me</figcaption>
+      </figure>
+    </div>
+    <div class="center">
+      <figure>
+        <img src="input/eye_mask.jpg"/>
+        <figcaption>Eye mask</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/leo_me_aligned_blended_grayscale.jpg"/>
+        <figcaption>Leo with my eyes</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/leo_me_aligned_blended.jpg"/>
+        <figcaption>Leo with my eyes, colored</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="input/mt.jpg"/>
+        <figcaption>Landscape</figcaption>
+      </figure>
+      <figure>
+        <img src="input/death.jpg"/>
+        <figcaption>Death Star</figcaption>
+      </figure>
+    </div>
+    <div class="center">
+      <figure>
+        <img src="input/death_mask.jpg"/>
+        <figcaption>Mask</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_blended_grayscale.jpg"/>
+        <figcaption>That's no Moon!</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_blended.jpg"/>
+        <figcaption>That's no Moon!, colored</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      Finally, here are the masks as applied to various levels of the two images in the last blended image:
+    </p>
+
+    <div class="center">
+      <figure>
+        <img src="output/2-4/mt_death_left_0.jpg"/>
+        <figcaption>Landscape, level 0 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_left_1.jpg"/>
+        <figcaption>Landscape, level 1 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_left_2.jpg"/>
+        <figcaption>Landscape, level 2 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_left_3.jpg"/>
+        <figcaption>Landscape, level 3 Gaussian</figcaption>
+      </figure>
+    </div>
+
+    <div class="center">
+      <figure>
+        <img src="output/2-4/mt_death_right_0.jpg"/>
+        <figcaption>Death Star, level 0 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_right_1.jpg"/>
+        <figcaption>Death Star, level 1 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_right_2.jpg"/>
+        <figcaption>Death Star, level 2 Laplacian</figcaption>
+      </figure>
+      <figure>
+        <img src="output/2-4/mt_death_right_3.jpg"/>
+        <figcaption>Death Star, level 3 Gaussian</figcaption>
+      </figure>
+    </div>
+  </body>
+</html>
